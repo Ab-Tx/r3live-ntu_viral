@@ -47,6 +47,24 @@ Dr. Fu Zhang < fuzhang@hku.hk >.
 */
 #include "r3live.hpp"
 
+// Point cloud structure of "Ouster OS1-16 gen 1" in NTU_VIRAL
+struct PointXYZIEtc {
+    PCL_ADD_POINT4D;
+    float intensity;
+    std::uint32_t t;
+    std::uint16_t reflectivity;
+    std::uint8_t ring;
+    std::uint16_t ambient;
+    std::uint32_t range;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+} EIGEN_ALIGN16;
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (PointXYZIEtc,
+(float, x, x) (float, y, y) (float, z, z) (float, intensity, intensity)
+(std::uint32_t, t, t) (std::uint16_t, reflectivity, reflectivity) 
+(std::uint8_t, ring, ring) (std::uint16_t, ambient, ambient) 
+(std::uint32_t, range, range))
+
 void R3LIVE::imu_cbk( const sensor_msgs::Imu::ConstPtr &msg_in )
 {
     sensor_msgs::Imu::Ptr msg( new sensor_msgs::Imu( *msg_in ) );
@@ -97,7 +115,7 @@ bool R3LIVE::get_pointcloud_data_from_ros_message( sensor_msgs::PointCloud2::Con
     // printf_field_name(msg);
     if ( msg->fields.size() < 3 )
     {
-        cout << "Get pointcloud data from ros messages fail!!!" << endl;
+        cout << "Get pointcloud data from ros messages fail!!! (Less than 3 fields)" << endl;
         scope_color( ANSI_COLOR_RED_BOLD );
         printf_field_name( msg );
         return false;
@@ -108,6 +126,27 @@ bool R3LIVE::get_pointcloud_data_from_ros_message( sensor_msgs::PointCloud2::Con
              ( msg->fields[ 4 ].name == "normal_x" ) ) // Input message type is pcl::PointXYZINormal
         {
             pcl::fromROSMsg( *msg, pcl_pc );
+            return true;
+        } 
+        else if ( ( msg->fields.size() == 9 ) && ( msg->fields[ 3 ].name == "intensity" ) ) // Input message type is pcl::PointXYZINormal
+        {   
+            // Normals are used to generate a mesh.
+            // If missing normals, these could be manually computed https://emotionrobots.com/2015/09/19/pcl-cloud-basics/
+            // Point cloud without normals are handled at "meshing\PointCloud.cpp" in "Save" method.
+            pcl::PointCloud<PointXYZIEtc> cloud;//::Ptr cloud(new pcl::PointCloud <PointXYZIEtc>);
+            pcl::fromROSMsg(*msg, cloud);
+            pcl_pc.resize( cloud.points.size() );
+            for ( int i = 0; i < cloud.size(); i++ ){
+                pcl::PointXYZINormal temp_pt;
+                temp_pt.x=cloud.points[ i ].x;
+                temp_pt.y=cloud.points[ i ].y;
+                temp_pt.z=cloud.points[ i ].z;
+                temp_pt.intensity = cloud.points[ i ].intensity;
+                temp_pt.curvature = 0;
+                pcl_pc.points[ i ] = temp_pt;
+            }
+
+            // pcl::fromROSMsg( *msg, pcl_pc ); // This could also be used, but will prompt warnings from PCL
             return true;
         }
         else if ( ( msg->fields.size() == 4 ) && ( msg->fields[ 3 ].name == "rgb" ) )
@@ -140,7 +179,7 @@ bool R3LIVE::get_pointcloud_data_from_ros_message( sensor_msgs::PointCloud2::Con
         }
         else // TODO, can add by yourself
         {
-            cout << "Get pointcloud data from ros messages fail!!! ";
+            cout << "Get pointcloud data from ros messages fail!!! (unhandled field structure)";
             scope_color( ANSI_COLOR_RED_BOLD );
             printf_field_name( msg );
             return false;
