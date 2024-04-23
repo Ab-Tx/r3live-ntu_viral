@@ -58,9 +58,9 @@ static const Eigen::Matrix3f Eye3f(Eigen::Matrix3f::Identity());
 static const Eigen::Vector3d Zero3d(0, 0, 0);
 static const Eigen::Vector3f Zero3f(0, 0, 0);
 // Eigen::Vector3d Lidar_offset_to_IMU(0.05512, 0.02226, 0.0297); // Horizon
-static const Eigen::Vector3d Lidar_offset_to_IMU(0.04165, 0.02326, -0.0284); // Avia
+// static const Eigen::Vector3d Lidar_offset_to_IMU(0.04165, 0.02326, -0.0284); // Avia
 //static const Eigen::Vector3d Lidar_offset_to_IMU(0.06253, -0.011775, 0.07645); // OS1-16 internal IMU, https://data.ouster.io/downloads/software-user-manual/software-user-manual-v2p0.pdf
-//static const Eigen::Vector3d Lidar_offset_to_IMU(-0.050, 0.0, 0.055); // OS1-16, NTU_Viral separate IMU
+static const Eigen::Vector3d Lidar_offset_to_IMU(-0.050, 0.0, 0.055); // OS1-16, NTU_Viral separate IMU
 
 struct Pose6D
 {
