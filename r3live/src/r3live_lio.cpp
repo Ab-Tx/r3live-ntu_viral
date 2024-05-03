@@ -105,7 +105,6 @@ void printf_field_name( sensor_msgs::PointCloud2::ConstPtr &msg )
     cout << endl;
 }
 
-
 bool R3LIVE::get_pointcloud_data_from_ros_message( sensor_msgs::PointCloud2::ConstPtr &msg, pcl::PointCloud< pcl::PointXYZINormal > &pcl_pc )
 {
 
@@ -131,7 +130,7 @@ bool R3LIVE::get_pointcloud_data_from_ros_message( sensor_msgs::PointCloud2::Con
         else if ( ( msg->fields.size() == 9 ) && ( msg->fields[ 3 ].name == "intensity" ) ) // Input message type is pcl::PointXYZINormal
         {   
             // Normals are used to generate a mesh.
-            // If missing normals, these could be manually computed https://emotionrobots.com/2015/09/19/pcl-cloud-basics/
+            // If missing normals are needed, these could be manually computed https://emotionrobots.com/2015/09/19/pcl-cloud-basics/
             // Point cloud without normals are handled at "meshing\PointCloud.cpp" in "Save" method.
             pcl::PointCloud<PointXYZIEtc> cloud;//::Ptr cloud(new pcl::PointCloud <PointXYZIEtc>);
             pcl::fromROSMsg(*msg, cloud);

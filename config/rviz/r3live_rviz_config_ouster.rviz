@@ -2057,7 +2057,7 @@ Visualization Manager:
       Enabled: true
       Name: RGB_map
     - Class: rviz/Image
-      Enabled: true
+      Enabled: false
       Image Topic: /camera/image_color
       Max Value: 1
       Median window: 5
@@ -2069,7 +2069,7 @@ Visualization Manager:
       Unreliable: false
       Value: true
     - Class: rviz/Image
-      Enabled: false
+      Enabled: true
       Image Topic: /track_img
       Max Value: 1
       Median window: 5
