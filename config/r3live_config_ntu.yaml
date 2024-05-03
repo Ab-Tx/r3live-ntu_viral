@@ -27,14 +27,17 @@ r3live_vio:
       # 0.0, 0.0, 1.0 ]
    
    # Calculated from MATLAB stereoCameraCalibrator using calib_stereo dataset: k1, k2, k3 -0.312793405695452	0.128165059168011	-0.0285839754739671
-   # using k1 and k2 from provided parameters in eee_03 dataset 
+   # using k1 and k2 from provided parameters in eee_03 dataset , camera_left.yaml
    camera_dist_coeffs: [-0.288105327549552, 0.074578284234601, 7.784489598138802e-04, -2.277853975035461e-04, -0.0285839754739671]  #k1, k2, p1, p2, k3
    # Fine extrinsic value. form camera-LiDAR calibration.
    camera_ext_R:
-         [0.02183084, -0.01312053,  0.99967558,
-           0.99975965,  0.00230088, -0.02180248,
-          -0.00201407,  0.99991127,  0.01316761,]
-   camera_ext_t: [0.00552943,-0.12431302,0.01614686]
+         [  0, -1,  0,
+            0,  0, -1,
+            1,  0,  0]
+         # [0.02183084, -0.01312053,  0.99967558,
+         #   0.99975965,  0.00230088, -0.02180248,
+         #  -0.00201407,  0.99991127,  0.01316761]
+   camera_ext_t: [0.12431302,-0.00552943,-0.01614686]
    
 r3live_lio:        
    lio_update_point_step: 4   # Point step used for LIO update.  
