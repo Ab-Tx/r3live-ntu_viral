@@ -87,7 +87,7 @@ void R3LIVE::imu_cbk( const sensor_msgs::Imu::ConstPtr &msg_in )
         msg->linear_acceleration.y *= G_m_s2;
         msg->linear_acceleration.z *= G_m_s2;
     }
-
+    msg->linear_acceleration.z *= -1; // invert gravitational acceleration, required for NTU Viral dataset, comment for other datasets
     imu_buffer_lio.push_back( msg );
     imu_buffer_vio.push_back( msg );
     // std::cout<<"got imu: "<<timestamp<<" imu size "<<imu_buffer_lio.size()<<std::endl;
