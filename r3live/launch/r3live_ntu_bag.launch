@@ -1,12 +1,16 @@
 <launch>
 
+    <param name="/use_sim_time" value="true" /> <!-- do not ofrget "-clock" argument in rosbag -->
     <!-- <node name="tf2_body2world" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 /world /Body"/> -->
-    <!-- IMU (not LiDAR's IMU) -->
+
+    <!-- hardcoded configurations -->
+    <!-- "static const Eigen::Vector3d Lidar_offset_to_IMU" tf specified in "common_lib.h" -->
+    <!-- "msg->linear_acceleration.z *= -1;" gravitational acceleration inverted in "r3live_lio.cpp"  -->
 
     <!-- Subscribed topics -->
-    <param name="/LiDAR_pointcloud_topic" type="string" value= "/point_cloud/output" /> <!-- /os1_cloud_node1/points --> <!-- /point_cloud/output -->
-    <param name="/IMU_topic" type="string" value= "/new/imu" /> <!-- Also do update the tf specified in "common_lib.h" -->
-    <param name="/Image_topic" type="string" value= "/output/image_raw" /> <!-- /output/image_raw --> <!-- /left/image_raw -->
+    <param name="/LiDAR_pointcloud_topic" type="string" value= "/os1_cloud_node1/points" /> 
+    <param name="/IMU_topic" type="string" value= "/imu/imu" />  <!-- /os1_cloud_node1/imu -->
+    <param name="/Image_topic" type="string" value= "/output/image_raw " /> <!-- /output/image_raw --> <!-- /left/image_raw -->
     <param name="map_output_dir" type="string" value="$(env HOME)/r3live_output" />
     <rosparam command="load" file="$(find r3live)/../config/r3live_config_ntu.yaml" />
     
@@ -20,6 +24,6 @@
     
     <arg name="rviz" default="1" />
     <group if="$(arg rviz)">
-        <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find r3live)/../config/rviz/r3live_rviz_config_ouster.rviz" />
+        <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find r3live)/../config/rviz/r3live_rviz_config_ouster_ntu.rviz" />
     </group>
  </launch>
