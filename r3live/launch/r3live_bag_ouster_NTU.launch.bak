@@ -1,0 +1,62 @@
+<launch>
+
+    <!-- <node name="tf2_body2world" pkg="tf2_ros" type="static_transform_publisher" args="0 0 0 0 0 0 /world /Body"/> -->
+ 
+    <!-- IMU (not LiDAR's IMU) -->
+    <node pkg="tf2_ros" type="static_transform_publisher"
+        name="T_Body_IMU"
+        args="0.0 0.0 0.0 0.0 0.0 3.141592653589793 Body imu"/> <!-- imu -->
+
+    <!-- LiDAR vertical -->
+    <node pkg="tf2_ros" type="static_transform_publisher"  
+        name="T_Body_LidarV"
+        args="-0.550 0.030 0.050 
+            0.0 3.141592653589793 1.570796326794897
+            Body sensor2/os_sensor"/> <!-- sensor2/os_sensor -->
+    <!-- IMU from LiDAR Vertical -->
+    <node pkg="tf2_ros" type="static_transform_publisher"
+        name="T_Body_imuLidarV"
+        args="-0.550 0.030 0.050 
+            3.141592653589793 3.141592653589793 1.570796326794897
+            Body sensor2/os_imu"/>   <!-- lidar tf + imu offset -->
+
+    <!-- LiDAR Horizontal -->
+    <node pkg="tf2_ros" type="static_transform_publisher"
+        name="T_Body_LidarH"
+        args="-0.050 0.000 0.055 
+            0.0 0.0 3.141592653589793
+            Body sensor1/os_sensor"/> <!-- Lidar -->
+    <!-- IMU from LiDAR Horizontal -->
+    <node pkg="tf2_ros" type="static_transform_publisher"
+        name="T_Body_imuLidarH"
+        args="6.203 -11.775 7.7 
+            3.141592653589793 0.0 3.141592653589793 
+            Body sensor1/os_imu"/>   <!-- lidar tf + imu offset -->
+
+    <!-- Left Camera (already in config file) xyz yaw(z) pitch(y) roll(x) -->
+    <node pkg="tf2_ros" type="static_transform_publisher"
+        name="T_Body_Cam"
+        args="0.00552943 -0.12431302 0.01614686 
+            1.1977317 1.1844989 1.2081774
+            Body Camera"/> <!-- Cam -->
+
+    <!-- Subscribed topics -->
+    <param name="/LiDAR_pointcloud_topic" type="string" value= "/point_cloud/output" /> <!-- /os1_cloud_node1/points -->
+    <param name="/IMU_topic" type="string" value= "/imu/imu" /> <!-- Also do update the tf specified in "common_lib.h" -->
+    <param name="/Image_topic" type="string" value= "/left/image_raw" />
+    <param name="map_output_dir" type="string" value="$(env HOME)/r3live_output" />
+    <rosparam command="load" file="$(find r3live)/../config/r3live_config_ntu.yaml" />
+    
+    <!-- set LiDAR type as ouster-64 spining LiDAR -->
+    <param name="/Lidar_front_end/lidar_type" type="int" value= "3" /> 
+    <param name="/Lidar_front_end/point_step" type="int" value="1" />
+    <param name="r3live_lio/lio_update_point_step" type="int" value="6" />
+        
+    <node pkg="r3live" type="r3live_LiDAR_front_end" name="r3live_LiDAR_front_end"  output="screen" required="true"/>
+    <node pkg="r3live" type="r3live_mapping" name="r3live_mapping" output="screen" required="true" />
+    
+    <arg name="rviz" default="1" />
+    <group if="$(arg rviz)">
+        <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find r3live)/../config/rviz/r3live_rviz_config_ouster.rviz" />
+    </group>
+ </launch>
